@@ -1,0 +1,20 @@
+{
+  "uid": "pod-node-resources",
+  "title": "Pod & Node Resource Overview",
+  "tags": ["kube-prom-stack"],
+  "schemaVersion": 38,
+  "version": 1,
+  "templating": {
+    "list": [
+      {"name": "namespace", "type": "query", "datasource": "Prometheus", "query": "label_values(kube_pod_info, namespace)", "refresh": 2},
+      {"name": "pod", "type": "query", "datasource": "Prometheus", "query": "label_values(kube_pod_info{namespace=\"$namespace\"}, pod)", "refresh": 2}
+    ]
+  },
+  "panels": [
+    {"type": "stat", "title": "Node CPU %", "datasource": "Prometheus", "targets": [{"expr": "100 - (avg by(instance)(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)", "legendFormat": "{{instance}}"}]},
+    {"type": "stat", "title": "Node Memory Used (GB)", "datasource": "Prometheus", "targets": [{"expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / 1024^3", "legendFormat": "{{instance}}"}]},
+    {"type": "timeseries", "title": "Pod CPU (cores)", "datasource": "Prometheus", "targets": [{"expr": "sum by(pod) (rate(container_cpu_usage_seconds_total{image!='', namespace='$namespace', pod='$pod'}[5m]))", "legendFormat": "{{pod}}"}]},
+    {"type": "timeseries", "title": "Pod Memory (MiB)", "datasource": "Prometheus", "targets": [{"expr": "sum by(pod) (container_memory_working_set_bytes{image!='', namespace='$namespace', pod='$pod'}) / 1024^2", "legendFormat": "{{pod}}"}]},
+    {"type": "timeseries", "title": "Node Filesystem Usage %", "datasource": "Prometheus", "targets": [{"expr": "(1 - (node_filesystem_free_bytes{fstype!='tmpfs'} / node_filesystem_size_bytes{fstype!='tmpfs'})) * 100", "legendFormat": "{{instance}} {{mountpoint}}"}]}
+  ]
+}

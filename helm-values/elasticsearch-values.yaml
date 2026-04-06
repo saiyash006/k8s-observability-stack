@@ -1,0 +1,17 @@
+master:
+  replicas: 1
+  persistence:
+    enabled: false
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+coordinating:
+  replicas: 0
+data:
+  replicas: 0
+ingest:
+  replicas: 0

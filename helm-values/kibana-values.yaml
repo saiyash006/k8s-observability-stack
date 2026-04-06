@@ -1,0 +1,11 @@
+elasticsearch:
+  hosts: ["http://elasticsearch.logging.svc.cluster.local:9200"]
+service:
+  type: ClusterIP
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi

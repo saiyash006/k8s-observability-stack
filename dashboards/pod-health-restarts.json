@@ -1,0 +1,17 @@
+{
+  "uid": "pod-health-restarts",
+  "title": "Pod Health & Restarts",
+  "tags": ["kube-prom-stack"],
+  "schemaVersion": 38,
+  "version": 1,
+  "templating": {
+    "list": [
+      {"name": "namespace", "type": "query", "datasource": "Prometheus", "query": "label_values(kube_pod_info, namespace)", "refresh": 2}
+    ]
+  },
+  "panels": [
+    {"type": "timeseries", "title": "Container Restarts (15m rate)", "datasource": "Prometheus", "targets": [{"expr": "sum by(pod, container) (rate(kube_pod_container_status_restarts_total{namespace='$namespace'}[15m]))", "legendFormat": "{{pod}}/{{container}}"}]},
+    {"type": "stat", "title": "Not Ready Pods", "datasource": "Prometheus", "targets": [{"expr": "count(kube_pod_status_ready{namespace='$namespace', condition='false'})", "legendFormat": "unready"}]},
+    {"type": "timeseries", "title": "Pod Phase Counts", "datasource": "Prometheus", "targets": [{"expr": "sum by(phase) (kube_pod_status_phase{namespace='$namespace'})", "legendFormat": "{{phase}}"}]}
+  ]
+}
